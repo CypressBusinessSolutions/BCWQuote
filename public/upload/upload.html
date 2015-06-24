@@ -1,0 +1,71 @@
+<form id="frmImage">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-2"> Quote # {{quote.id}}
+			</div>
+			<div class="col-md-4">
+				<table>
+					<tbody>
+						<tr>
+							<td>Customer #</td>
+							<td>{{quote.contact.customerId}}</td>
+						</tr>
+						<tr>
+							<td>Phone #</td>
+							<td>{{quote.contact.phone}}</td>
+						</tr>
+						<tr>
+							<td>email</td>
+							<td>{{quote.contact.email}}</td>
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+			<div class="col-md-4">
+
+				<table>
+					<tbody>
+						<tr ng-repeat="line in quote.contact.lines">
+							<td colspan="2">{{line.text}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="col-md-2"></div>
+		</div>
+		<div class="row">
+			<div class="col-md-1">
+			</div>
+			<div class="col-md-8">Product # {{quote.bcwProduct}}
+			</div>
+			<div class="col-md-3">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-1">
+			</div>
+			<div class="col-md-8">
+				<canvas id="imgCanvas" width="700" height="600" style="border: 1px solid black" />
+				<!-- <img class="img-responsive"  name="scanImage" id="scanImage" ng-src="{{currentImage}} "> -->
+			</div>
+			<div class="col-md-3">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3 ">	
+				<div class="pull-right">				   
+					<a ng-click="increaseSize()" class="btn btn-default" ng-disabled="!currentImage"><span class="glyphicon glyphicon-zoom-in" ></span></a>
+					<a ng-click="decreaseSize()" class="btn btn-default" ng-disabled="!currentImage"><span class="glyphicon glyphicon-zoom-out"> </span></a>
+				</div>
+			</div>
+			<div class="col-md-7">
+
+				<input ng-disabled="!quote.bcwProduct" type='file' id="imgInp" />
+				<div ng-show="!quote.bcwProduct" class="alert alert-danger" role="alert">Please create Product before adding Images</div>
+			</div>
+			<div class="col-md-2">
+			</div>
+		</div>
+	</div>
+</form>
