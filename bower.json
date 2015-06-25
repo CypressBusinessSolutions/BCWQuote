@@ -1,0 +1,25 @@
+{
+  "name": "BCW Quote Interface",
+  "version": "1.0.0",
+  "homepage": "https://github.com/CypressBusinessSolutions/BCWQuote",
+  "authors": [
+    "James F Thompson <jthompson@cypressesolutions.com>"
+  ],
+  "description": "This is an interface to allow a web front-end to BCW Quoting system",
+  "main": "public/index.html",
+  "license": "Proprietary",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "../../shared/vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "angular": "~1.4.1",
+    "angular-route": "~1.4.1",
+    "angular-sanitize": "~1.4.1"
+  }
+}
