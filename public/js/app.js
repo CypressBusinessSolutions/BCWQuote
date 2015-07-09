@@ -7,26 +7,11 @@ quoteApp.run(function($rootScope, $location, $http) {
 		eCatAPI_Init({
 			apiURL: "/Service/JSON",
 			startDelay: function(callType, message) {
-				if (callType == "post") {
-					if (!message) {
-						message = "Saving Data"
-					}
-					$rootScope.waitCnt += 1;
-					$rootScope.formAlert = message;
-					$("body")
-						.css("cursor", "wait");
-				}
+
+			
 			},
 			endDelay: function(callType) {
-				if (callType == "post") {
-					$rootScope.waitCnt -= 1;
-					if ($rootScope.waitCnt <= 1) {
-						$rootScope.formAlert = "";
-						$rootScope.waitCnt = 0;
-						$("body")
-							.css("cursor", "default");
-					}
-				}
+
 			},
 			alert: function(code, message) {
 				$rootScope.Alert = message;
@@ -51,9 +36,11 @@ quoteApp.run(function($rootScope, $location, $http) {
 quoteApp.controller("UploadController", function($scope, $rootScope, $http, $location, $routeParams) {
 	
 	var canvas = document.getElementById('imgCanvas');
-    $scope.currentImage = null;
+    delete $scope.currentImage;
     $scope.percent = 70;
 	$scope.requestQuote = $routeParams.quote_number;
+	$scope.imageSaved = false;
+	
 	
     var image = new Image();
 	image.onload = function () {
@@ -68,7 +55,10 @@ quoteApp.controller("UploadController", function($scope, $rootScope, $http, $loc
 			reader.onload = function(e) {
 				$scope.currentImage = e.target.result;
 				image.src = $scope.currentImage;
+				$scope.percent = 70;
 				$scope.$apply();
+				$scope.imageSaved = false;
+				
 			}
 			reader.readAsDataURL(input.files[0]);
 		}
@@ -82,6 +72,14 @@ quoteApp.controller("UploadController", function($scope, $rootScope, $http, $loc
 	eCatAPI_LoadJSON("BCWQUOTE", $scope.requestQuote, null,
 		function(data, status, headers, config) {
 			$scope.quote = data.quote[0];
+			eCatAPI_LoadJSON("BCWLABELSIMAGES", $scope.quote.product.id, null,
+			function(data, status, headers, config) {
+				$scope.currentImage = data.images[0].image;
+				image.src = "data:image/png;base64," + $scope.currentImage;
+				$scope.percent = 100;
+				$scope.$apply();
+				$scope.imageSaved = true;
+			} );
 		},
 		function(data, status, headers, config) {
 			$rootScope.Alert ="Unable to Find Items";
@@ -89,15 +87,37 @@ quoteApp.controller("UploadController", function($scope, $rootScope, $http, $loc
 		
 	$scope.increaseSize = function(){
 		$scope.percent +=2;
-		if ($scope.percent > 95 ) {$scope.percent = 95;}
+		if ($scope.percent > 200 ) {$scope.percent = 200;}
 		drawImageScaled(image,canvas,$scope.percent);
+		$scope.imageSaved = false;
 	}
     $scope.decreaseSize = function(){
 		$scope.percent -=2;
 		if ($scope.percent < 10 ) {$scope.percent = 10;}
 		drawImageScaled(image,canvas,$scope.percent);
+		$scope.imageSaved = false;
 	}
 
+	$scope.saveImage = function(){
+
+		imgobj={}
+		imgobj.id = $scope.quote.product.id;
+		imgobj.image = canvas.toDataURL('image/png').substring(22);
+		
+		data={}
+		data.images=[];
+		data.images.push(imgobj);
+		pdata = JSON.stringify(data);
+		
+		eCatAPI_SaveJSON("BCWLABELSIMAGES", 'NEW', {}, pdata,
+		function(data, status, headers, config) {
+			$scope.imageSaved = true;
+		},
+		function(data, status, headers, config) {
+			$scope.imageSaved = false;
+		});
+		
+	}
 });
 
 function drawImageScaled(img, canvas, percent) {
